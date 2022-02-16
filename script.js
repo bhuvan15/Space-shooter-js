@@ -132,18 +132,17 @@ function spawnEnemies() {
         }
 
         enemies.push(new Enemy(x, y, radius, color, velocity));
-        console.log(enemies);
+
     }, 1000);
 }
 
+let animateId;
 
-    
 /* Animation loop */
 function animate() {
-    requestAnimationFrame(animate);
-
-
-
+    
+   animateId = requestAnimationFrame(animate);
+    
     /* Clearing canvas with each projectile */
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -159,8 +158,16 @@ function animate() {
     enemies.forEach((enemy, index) => {
         enemy.update();
 
+        /* cheking for distance between player and enemy */
+        /* Distance between two points */
+        const distance = Math.hypot(player.x - enemy.x, player.y - enemy.y);
+        if(distance - enemy.radius - player.radius < 1) { 
+            /* End game */
+            /* Cancelling animation frame */
+            cancelAnimationFrame(animateId);
+        }
 
-        /* Collision detection */
+        /* Collision detection for enemy hit*/
         /* For each enemy we will check the position of each projectile */
         projectiles.forEach((projectile, idx) => {
            /* Distance between two points */
@@ -176,10 +183,6 @@ function animate() {
                 projectiles.splice(idx, 1);
 
                 }, 0)
-
-
-
-
 
             }
         })
