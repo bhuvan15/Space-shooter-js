@@ -84,7 +84,7 @@ const x = canvas.width / 2;
 const y = canvas.height / 2;
 
 /* Player object */
-const player = new Player(x, y, 30, 'blue');
+const player = new Player(x, y, 12, '#fff');
 
 
 
@@ -117,7 +117,7 @@ function spawnEnemies() {
 
        
         
-        const color = 'green';
+        const color = `hsl(${Math.random() * 360}, 50%, 50%)`;
         /* click distance from center */
         let xD = canvas.width / 2 - x;
         let yD = canvas.height / 2 - y;
@@ -143,8 +143,10 @@ function animate() {
     
    animateId = requestAnimationFrame(animate);
     
+
     /* Clearing canvas with each projectile */
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     /* Drawing player at every frame after clearing*/
     player.draw();
@@ -183,6 +185,20 @@ function animate() {
             const distance = Math.hypot(projectile.x - enemy.x, projectile.y - enemy.y);
             /* Subtracting enemy radius and projectile radius because distance is from center */
             if(distance - enemy.radius - projectile.radius < 1) {
+
+                /* Shrinking enemy */
+                if(enemy.radius - 10 > 5) {
+                    /* Using gsap library to animate shrinking */
+                    gsap.to(enemy , {
+                        radius: enemy.radius - 10,
+                    })
+                    setTimeout(() => {
+                    /* removing projectile from projectiles array */
+                    projectiles.splice(idx, 1);
+
+                    }, 0)
+                    }
+                else {
                 /* Removing of enemy is causing a flash beacuse we are removing it but whenever we move to next
                 it is still trying to draw it */
                 setTimeout(() => {
@@ -192,6 +208,9 @@ function animate() {
                 projectiles.splice(idx, 1);
 
                 }, 0)
+                }
+                
+
 
             }
         })
@@ -213,12 +232,12 @@ window.addEventListener('click', (e) => {
     
     /* setting x and y velocity */
     const velocity = {
-        x: Math.cos(angle),
-        y : Math.sin(angle),
+        x: Math.cos(angle) * 5,
+        y : Math.sin(angle) * 5,
     }
 
     /* Pushing a new projectile every time we click on the screen to projectiles array */
-    projectiles.push(new Projectile(canvas.width / 2, canvas.height / 2, 5, 'red', velocity))
+    projectiles.push(new Projectile(canvas.width / 2, canvas.height / 2, 5, '#fff', velocity))
 })
 
 spawnEnemies();
