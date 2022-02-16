@@ -150,8 +150,17 @@ function animate() {
     player.draw();
 
     /* Loopping through every projectile in projectiles array */
-    projectiles.forEach((projectile) => {
+    projectiles.forEach((projectile, index) => {
         projectile.update();
+
+        /* If projectile moves off screen it needs to be removed */
+        if(projectile.x - projectile.radius < 0 || projectile.x - projectile.radius > canvas.width || projectile.y + projectile.radius < 0 || projectile.y - projectile.radius > canvas.height) {
+            setTimeout(() => {
+                /* removing projectile from projectiles array */
+                projectiles.splice(index, 1);
+
+            }, 0)
+        }
     })
 
     /* Looping through enemies to draw and update them*/
@@ -172,7 +181,7 @@ function animate() {
         projectiles.forEach((projectile, idx) => {
            /* Distance between two points */
             const distance = Math.hypot(projectile.x - enemy.x, projectile.y - enemy.y);
-            /* Subtracting anemy radius and projectile radius because distance is from center */
+            /* Subtracting enemy radius and projectile radius because distance is from center */
             if(distance - enemy.radius - projectile.radius < 1) {
                 /* Removing of enemy is causing a flash beacuse we are removing it but whenever we move to next
                 it is still trying to draw it */
@@ -194,6 +203,7 @@ function animate() {
 
 /* Creating a event listener on window object */
 window.addEventListener('click', (e) => {
+ 
     /* click distance from center */
     let x = e.clientX - canvas.width / 2;
     let y = e.clientY - canvas.height / 2;
