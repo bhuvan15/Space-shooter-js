@@ -51,6 +51,34 @@ class Projectile {
 
 }
 
+/* Enemies class */
+class Enemy {
+    constructor(x, y, radius, color, velocity) {
+        this.x = x;
+        this.y = y;
+        this.radius = radius;
+        this.color = color;
+        this.velocity = velocity;
+    }
+    /* Canvas draw function */
+    draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+    }
+
+    /* Updating class properties function */
+    update() {
+        this.draw();
+        this.x = this.x + this.velocity.x;
+        this.y = this.y + this.velocity.y;
+    }
+
+}
+
+
+
 /* Setting player co-ordinates */
 const x = canvas.width / 2;
 const y = canvas.height / 2;
@@ -62,6 +90,51 @@ const player = new Player(x, y, 30, 'blue');
 
 /* Grouping of projectiles */
 const projectiles = [];
+/* Grouping of enemies */
+const enemies = [];
+
+/* Spawn enemies*/
+function spawnEnemies() {
+    /* Creating new enemy after every sec */
+    setInterval(() => {
+        /* Generating random radius for enemy */
+        /* This frmat makes sure we get value from 4 to 30 */
+        const radius = Math.random() * (30 - 4) + 4;
+
+        /* Generating random starting postions for the enemy */
+        let x;
+        let y;
+
+
+        if(Math.random() < 0.5) {
+             x = Math.random() < 0.5 ? 0 - radius : canvas.width + radius;
+             y = Math.random() * canvas.height;
+        }
+        else {
+            x = Math.random() * canvas.width;
+            y = Math.random() < 0.5 ? 0 - radius : canvas.height + radius;
+        }
+
+       
+        
+        const color = 'green';
+        /* click distance from center */
+        let xD = canvas.width / 2 - x;
+        let yD = canvas.height / 2 - y;
+
+        /* Angle between center and click pos in radians*/
+        const angle = Math.atan2(yD, xD);
+        
+        /* setting x and y velocity */
+        const velocity = {
+            x: Math.cos(angle),
+            y : Math.sin(angle),
+        }
+
+        enemies.push(new Enemy(x, y, radius, color, velocity));
+        console.log(enemies);
+    }, 1000);
+}
 
 
     
@@ -82,6 +155,10 @@ function animate() {
         projectile.update();
     })
 
+    /* Looping through enemies to draw and update them*/
+    enemies.forEach(enemy => {
+        enemy.update();
+    })
 
 }
 
@@ -106,4 +183,5 @@ window.addEventListener('click', (e) => {
     projectiles.push(new Projectile(canvas.width / 2, canvas.height / 2, 5, 'red', velocity))
 })
 
+spawnEnemies();
 animate();
