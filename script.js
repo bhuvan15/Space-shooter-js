@@ -7,6 +7,8 @@ const ctx = canvas.getContext('2d');
 canvas.width = innerWidth;
 canvas.height = innerHeight;
 
+/* score */
+const scoreEl = document.querySelector('#scoreEl');
 
 /* Player class */
 class Player {
@@ -176,7 +178,7 @@ function spawnEnemies() {
 }
 
 let animateId;
-
+let score = 0;
 /* Animation loop */
 function animate() {
     
@@ -237,8 +239,8 @@ function animate() {
             /* Subtracting enemy radius and projectile radius because distance is from center */
             if(distance - enemy.radius - projectile.radius < 1) {
 
-               
-                /* Small particles after bursting */
+                
+              /* Small particles after bursting */
                 for(let i = 0; i < enemy.radius * 2; i++) {
                     particles.push(new Particle(projectile.x, projectile.y, Math.random() * 2, enemy.color, {x: (Math.random() - 0.5) * (Math.random() * 6)  , y: (Math.random() - 0.5) * (Math.random() * 6) ,}))
                 }
@@ -246,6 +248,11 @@ function animate() {
 
                 /* Shrinking enemy */
                 if(enemy.radius - 10 > 5) {
+
+                    /* Increase Score */
+                    score += 100;
+                    scoreEl.innerHTML = score;
+
                     /* Using gsap library to animate shrinking */
                     gsap.to(enemy , {
                         radius: enemy.radius - 10,
@@ -257,6 +264,11 @@ function animate() {
                     }, 0)
                     }
                 else {
+
+                    /* Increase Score */
+                    score += 200;
+                    scoreEl.innerHTML = score;
+
                 /* Removing of enemy is causing a flash beacuse we are removing it but whenever we move to next
                 it is still trying to draw it */
                 setTimeout(() => {
