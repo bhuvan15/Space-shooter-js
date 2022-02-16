@@ -42,22 +42,68 @@ class Projectile {
         ctx.fill();
     }
 
+    /* Updating class properties function */
+    update() {
+        this.draw();
+        this.x = this.x + this.velocity.x;
+        this.y = this.y + this.velocity.y;
+    }
+
 }
 
 /* Setting player co-ordinates */
 const x = canvas.width / 2;
 const y = canvas.height / 2;
 
+/* Player object */
 const player = new Player(x, y, 30, 'blue');
-/* Drawing player */
-player.draw();
-console.log(player);
+
+
+
+/* Grouping of projectiles */
+const projectiles = [];
+
+
+    
+/* Animation loop */
+function animate() {
+    requestAnimationFrame(animate);
+
+
+
+    /* Clearing canvas with each projectile */
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    /* Drawing player at every frame after clearing*/
+    player.draw();
+
+    /* Loopping through every projectile in projectiles array */
+    projectiles.forEach((projectile) => {
+        projectile.update();
+    })
+
+
+}
+
+
 
 /* Creating a event listener on window object */
 window.addEventListener('click', (e) => {
-    /* x and y cordinates using event */
-    let x = e.clientX;
-    let y = e.clientY
-    const projectile = new Projectile(x, y, 5, 'red', null);
-    projectile.draw();
+    /* click distance from center */
+    let x = e.clientX - canvas.width / 2;
+    let y = e.clientY - canvas.height / 2;
+
+    /* Angle between center and click pos in radians*/
+    const angle = Math.atan2(y, x);
+    
+    /* setting x and y velocity */
+    const velocity = {
+        x: Math.cos(angle),
+        y : Math.sin(angle),
+    }
+
+    /* Pushing a new projectile every time we click on the screen to projectiles array */
+    projectiles.push(new Projectile(canvas.width / 2, canvas.height / 2, 5, 'red', velocity))
 })
+
+animate();
