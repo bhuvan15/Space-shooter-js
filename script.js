@@ -156,8 +156,33 @@ function animate() {
     })
 
     /* Looping through enemies to draw and update them*/
-    enemies.forEach(enemy => {
+    enemies.forEach((enemy, index) => {
         enemy.update();
+
+
+        /* Collision detection */
+        /* For each enemy we will check the position of each projectile */
+        projectiles.forEach((projectile, idx) => {
+           /* Distance between two points */
+            const distance = Math.hypot(projectile.x - enemy.x, projectile.y - enemy.y);
+            /* Subtracting anemy radius and projectile radius because distance is from center */
+            if(distance - enemy.radius - projectile.radius < 1) {
+                /* Removing of enemy is causing a flash beacuse we are removing it but whenever we move to next
+                it is still trying to draw it */
+                setTimeout(() => {
+                /* Removing enemy from enemies array */
+                enemies.splice(index, 1);
+                /* removing projectile from projectiles array */
+                projectiles.splice(idx, 1);
+
+                }, 0)
+
+
+
+
+
+            }
+        })
     })
 
 }
