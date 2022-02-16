@@ -9,6 +9,12 @@ canvas.height = innerHeight;
 
 /* score */
 const scoreEl = document.querySelector('#scoreEl');
+/* Start button */
+const startBtn = document.querySelector('#startBtn');
+/* Model */
+
+const modelEl = document.querySelector('#modelEl');
+const modalScore = document.querySelector('#modalScore');
 
 /* Player class */
 class Player {
@@ -123,16 +129,28 @@ const x = canvas.width / 2;
 const y = canvas.height / 2;
 
 /* Player object */
-const player = new Player(x, y, 12, '#fff');
-
-
-
+let player = new Player(x, y, 12, '#fff');
 /* Grouping of projectiles */
-const projectiles = [];
+let projectiles = [];
 /* Grouping of enemies */
-const enemies = [];
+let enemies = [];
 /* Grouping of particles */
-const particles = [];
+let particles = [];
+
+
+/* For restart */
+
+function init() {
+    
+    player = new Player(x, y, 12, '#fff');
+    projectiles = [];
+    enemies = [];
+    particles = [];
+    score = 0;
+    scoreEl.innerHTML = score;
+    modalScore.innerHTML = score;
+}
+
 
 /* Spawn enemies*/
 function spawnEnemies() {
@@ -229,6 +247,10 @@ function animate() {
             /* End game */
             /* Cancelling animation frame */
             cancelAnimationFrame(animateId);
+            
+            /* End modal */
+            modelEl.style.display = 'flex';
+            modalScore.innerHTML = score;
         }
 
         /* Collision detection for enemy hit*/
@@ -310,5 +332,12 @@ window.addEventListener('click', (e) => {
     projectiles.push(new Projectile(canvas.width / 2, canvas.height / 2, 5, '#fff', velocity))
 })
 
-spawnEnemies();
-animate();
+
+/* Start game */
+    
+startBtn.addEventListener('click', function() {
+    init();
+    animate();
+    spawnEnemies();
+    modelEl.style.display = 'none';
+})
