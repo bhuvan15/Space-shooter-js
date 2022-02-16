@@ -76,7 +76,44 @@ class Enemy {
     }
 
 }
+/* For slowing particles */
+const friction = 0.99;
 
+/* small pieces classes after bursting */
+class Particle {
+    constructor(x, y, radius, color, velocity) {
+        this.x = x;
+        this.y = y;
+        this.radius = radius;
+        this.color = color;
+        this.velocity = velocity;
+        this.alpha = 1;
+    }
+    /* Canvas draw function */
+    draw() {
+        /* Save starts the global canvas function and restore ends to */
+        /* We do to change alpha value */
+        ctx.save();
+        ctx.globalAlpha = this.alpha;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+        ctx.restore();
+    }
+    /* If a globalAlpha value is less than 0 then it will reappear */
+
+    /* Updating class properties function */
+    update() {
+        this.draw();
+        this.x = this.x + this.velocity.x;
+        this.y = this.y + this.velocity.y;
+        this.alpha -= 0.01;
+        this.velocity.x *= friction;
+        this.velocity.y *= friction;
+    }
+
+}
 
 
 /* Setting player co-ordinates */
@@ -92,6 +129,8 @@ const player = new Player(x, y, 12, '#fff');
 const projectiles = [];
 /* Grouping of enemies */
 const enemies = [];
+/* Grouping of particles */
+const particles = [];
 
 /* Spawn enemies*/
 function spawnEnemies() {
@@ -151,6 +190,18 @@ function animate() {
     /* Drawing player at every frame after clearing*/
     player.draw();
 
+    /* Particle rendering */
+    particles.forEach((particle, index) => {
+        if(particle.alpha <= 0) {
+            particles.slice(index, 1);
+        }
+        else {
+            particle.update();
+        }
+        
+
+    })
+
     /* Loopping through every projectile in projectiles array */
     projectiles.forEach((projectile, index) => {
         projectile.update();
@@ -185,6 +236,13 @@ function animate() {
             const distance = Math.hypot(projectile.x - enemy.x, projectile.y - enemy.y);
             /* Subtracting enemy radius and projectile radius because distance is from center */
             if(distance - enemy.radius - projectile.radius < 1) {
+
+               
+                /* Small particles after bursting */
+                for(let i = 0; i < enemy.radius * 2; i++) {
+                    particles.push(new Particle(projectile.x, projectile.y, Math.random() * 2, enemy.color, {x: (Math.random() - 0.5) * (Math.random() * 6)  , y: (Math.random() - 0.5) * (Math.random() * 6) ,}))
+                }
+
 
                 /* Shrinking enemy */
                 if(enemy.radius - 10 > 5) {
